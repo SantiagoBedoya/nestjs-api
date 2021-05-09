@@ -7,19 +7,19 @@ import { AuthResponse } from './interfaces/auth-response.interface';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { TokenPayload } from './interfaces/token-payload.interface';
 import { RegisterResponse } from './interfaces/register-response.interface';
-import { UsersRepository } from '../users/user.repository';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersRepository: UsersRepository,
+    private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
   async authenticate(
     userLoginDto: UserLoginDto,
   ): Promise<ApiResponse<AuthResponse | null>> {
-    const currentUser = await this.usersRepository.findOneByEmail(
+    const currentUser = await this.usersService.findOneByEmail(
       userLoginDto.email,
     );
     if (!currentUser) {
@@ -55,7 +55,7 @@ export class AuthService {
   async register(
     createUserDto: CreateUserDto,
   ): Promise<ApiResponse<RegisterResponse | null>> {
-    const existUser = await this.usersRepository.findOneByEmail(
+    const existUser = await this.usersService.findOneByEmail(
       createUserDto.email,
     );
     if (existUser) {
@@ -65,7 +65,7 @@ export class AuthService {
         data: null,
       };
     }
-    const createdUser = await this.usersRepository.create(createUserDto);
+    const createdUser = await this.usersService.create(createUserDto);
 
     const token = this.generateToken({
       sub: createdUser._id,

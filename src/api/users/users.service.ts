@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './user.repository';
+import { WalletsRepository } from '../wallets/wallets.repository';
+import { WalletsService } from '../wallets/wallets.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private walletService: WalletsService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const createdUser = await this.usersRepository.create(createUserDto);
+    await this.walletService.create({ user: createdUser._id });
     return createdUser;
   }
 
@@ -34,6 +40,7 @@ export class UsersService {
 
   async remove(id: string) {
     const deletedUser = await this.usersRepository.remove(id);
+    await this.walletService.removeUserWallet(deletedUser._id);
     return deletedUser;
   }
 }

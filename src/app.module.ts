@@ -16,6 +16,7 @@ import { configuration } from './config/configuration';
       useCreateIndex: true,
       useUnifiedTopology: true,
       useNewUrlParser: true,
+      useFindAndModify: false,
     }),
     ApiModule,
   ],
